@@ -30,6 +30,10 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI',Meir
 .tt{font-size:15px;font-weight:700;line-height:1.3;min-width:0;flex:1;}
 .tt small{display:block;font-size:11px;font-weight:400;opacity:.85;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .tb-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;padding:7px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0;}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:5px 10px;border-radius:99px;flex-shrink:0;}
+.live i{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;animation:blink 1.6s infinite;}
+.live.off i{background:#f87171;animation:none;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 
 .wrap{max-width:640px;margin:0 auto;padding:16px 14px 60px;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:var(--shadow);}
@@ -42,7 +46,6 @@ input[type=text],textarea,select{width:100%;font-size:16px;padding:11px 13px;bor
   border-radius:10px;font-family:inherit;background:#fff;color:var(--text);outline:none;}
 input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);}
 textarea{resize:vertical;line-height:1.8;}
-.fld{margin-bottom:14px;}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;border-radius:11px;
   cursor:pointer;font-size:14.5px;border:1px solid var(--border-strong);background:#fff;color:var(--text);
@@ -50,7 +53,6 @@ textarea{resize:vertical;line-height:1.8;}
 .btn:active{transform:scale(.99);}
 .btn:disabled{opacity:.45;}
 .btn-primary{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 6px rgba(13,148,136,.3);}
-.btn-line{background:#06C755;color:#fff;border-color:#06C755;box-shadow:0 2px 6px rgba(6,199,85,.3);}
 .btn-ghost{background:var(--surface-2);color:var(--muted);}
 .btn-danger{color:var(--danger);border-color:var(--danger-border);}
 .btn-row{display:flex;gap:9px;}
@@ -71,10 +73,8 @@ textarea{resize:vertical;line-height:1.8;}
 .step-b{font-size:13.5px;line-height:1.75;}
 .step-b b{display:block;font-size:14px;margin-bottom:1px;color:var(--text);}
 
-/* 縦線えらび */
 .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;}
-.pick{border:1.5px solid var(--border-strong);background:#fff;border-radius:12px;padding:12px 4px;text-align:center;
-  cursor:pointer;font-family:inherit;}
+.pick{border:1.5px solid var(--border-strong);background:#fff;border-radius:12px;padding:12px 4px;text-align:center;cursor:pointer;font-family:inherit;}
 .pick .n{font-size:22px;font-weight:800;color:var(--primary-dark);display:block;line-height:1.1;}
 .pick .s{font-size:10.5px;color:var(--muted-2);display:block;margin-top:3px;min-height:14px;}
 .pick.sel{border-color:var(--primary);background:var(--primary);box-shadow:0 3px 10px rgba(13,148,136,.35);}
@@ -82,10 +82,15 @@ textarea{resize:vertical;line-height:1.8;}
 .pick.taken{background:var(--surface-2);border-color:var(--border);cursor:not-allowed;}
 .pick.taken .n{color:var(--muted-2);}
 .pick.taken .s{color:var(--text);font-weight:700;}
+.pick.mine{background:var(--warn-soft);border-color:var(--warn-border);}
+.pick.mine .n{color:var(--warn);}
 
-.code-box{background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;border-radius:14px;padding:20px 16px;text-align:center;margin-bottom:13px;}
-.code-box .cl{font-size:12px;opacity:.85;}
-.code-box .cv{font-size:30px;font-weight:800;letter-spacing:.04em;margin:6px 0 2px;font-family:'Hiragino Kaku Gothic ProN',sans-serif;word-break:break-all;}
+.prog{background:var(--border);border-radius:99px;height:9px;overflow:hidden;}
+.prog i{display:block;height:9px;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .4s;}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px;}
+.stat div{background:linear-gradient(135deg,var(--primary-soft),#fff);border:1px solid var(--primary-light);border-radius:11px;padding:12px 6px;text-align:center;}
+.stat b{display:block;font-size:22px;font-weight:800;color:var(--primary-dark);line-height:1.2;}
+.stat span{font-size:10.5px;color:var(--muted);}
 
 .big{background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;border-radius:16px;padding:22px 18px;text-align:center;margin-bottom:14px;box-shadow:0 6px 20px rgba(13,148,136,.3);}
 .big .l{font-size:12px;opacity:.85;}
@@ -93,10 +98,9 @@ textarea{resize:vertical;line-height:1.8;}
 .big .v{font-size:29px;font-weight:800;margin-top:6px;line-height:1.25;}
 
 table.tbl{width:100%;border-collapse:collapse;font-size:14px;}
-table.tbl th{text-align:left;padding:8px 8px;color:var(--muted);font-weight:600;font-size:11px;border-bottom:2px solid var(--border);background:var(--surface-2);}
+table.tbl th{text-align:left;padding:8px;color:var(--muted);font-weight:600;font-size:11px;border-bottom:2px solid var(--border);background:var(--surface-2);}
 table.tbl td{padding:10px 8px;border-bottom:1px solid var(--border);}
 table.tbl tr.me td{background:var(--warn-soft);font-weight:700;}
-table.tbl tr.bad td{background:var(--danger-soft);}
 .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px;}
 
 .amida-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:4px;}
@@ -104,13 +108,11 @@ table.tbl tr.bad td{background:var(--danger-soft);}
 .path-line{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
 
 .chip{display:inline-block;padding:5px 11px;border-radius:99px;font-size:12px;border:1px solid var(--border);background:var(--surface-2);margin:2px;}
-.mono{font-family:'SFMono-Regular',Consolas,monospace;font-size:11px;word-break:break-all;background:var(--surface-2);
-  border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin:4px 0 10px;}
+.mono{font-family:'SFMono-Regular',Consolas,monospace;font-size:11px;word-break:break-all;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin:4px 0 10px;}
 details.dt{border:1px solid var(--border);border-radius:11px;padding:11px 14px;background:var(--surface-2);font-size:12.5px;}
 details.dt summary{cursor:pointer;font-weight:700;color:var(--muted);}
 
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:#1e293b;color:#fff;padding:12px 20px;
-  border-radius:11px;font-size:13.5px;box-shadow:0 8px 24px rgba(15,23,42,.35);z-index:900;opacity:0;pointer-events:none;transition:.2s;max-width:88vw;text-align:center;}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:#1e293b;color:#fff;padding:12px 20px;border-radius:11px;font-size:13.5px;box-shadow:0 8px 24px rgba(15,23,42,.35);z-index:900;opacity:0;pointer-events:none;transition:.2s;max-width:88vw;text-align:center;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
 .toast.err{background:#991b1b;}
 @media print{.topbar,.no-print{display:none!important}.wrap{padding:0}.card{box-shadow:none;break-inside:avoid}}
@@ -121,6 +123,7 @@ details.dt summary{cursor:pointer;font-weight:700;color:var(--muted);}
 <div class="topbar">
   <div class="logo">🎋</div>
   <div class="tt">あみだくじ<small id="sub">当番決め</small></div>
+  <span class="live" id="live" style="display:none"><i></i><span id="live-t">自動更新中</span></span>
   <button class="tb-btn no-print" onclick="go('')">最初へ</button>
 </div>
 <div class="wrap" id="app"></div>
@@ -129,24 +132,25 @@ details.dt summary{cursor:pointer;font-weight:700;color:var(--muted);}
 <script>
 "use strict";
 /* ══════════════════════════════════════════════════════════════
-   あみだくじ（サーバー不要・GitHub Pages 版）
+   あみだくじ（オンライン版）
 
-   ● なぜサーバーが要らないのか
-     くじの内容も、抽選結果も、すべて URL の「#」以降に詰め込んで
-     受け渡します。「#」以降はサーバーに送信されない部分なので、
-     GitHub にも誰のところにも職員名は残りません。
+   ● 保存先
+     Google Apps Script で作った小さな置き場（幹事のGoogleアカウント内）に
+     名前と番号を自動保存します。参加者は開いて選ぶだけで、
+     コードを送り返す必要はありません。
 
    ● 不正ができない仕組み（コミット・アンド・リビール）
-     1. 幹事の端末が「封印番号」を作り、その要約(SHA-256ハッシュ)だけを
-        参加用URLに入れて配る。封印番号そのものは幹事の端末に保管。
-     2. 参加者は縦線と4桁の数字を選び、コードを返信する。
-     3. 全員そろったら「封印番号＋全員の4桁」から横線の位置を決める。
+     1. くじを作った時点で保存先が「封印番号」を作り、その要約
+        （SHA-256ハッシュ）だけを全員に公開する。
+     2. 参加者は縦線と4桁の数字を選ぶ。数字は入力と同時に全員に見える。
+     3. 全員そろって初めて封印番号が公開され、
+        「封印番号＋全員の4桁」から横線の位置が決まる。
      → 幹事は他人の4桁を知らず、参加者は封印番号を知らないので
-       誰も結果を操作できない。結果URLでは封印番号が公開され、
-       最初に配ったハッシュ値と一致するか誰でも検算できる。
+       誰も結果を操作できない。あみだの線を引く計算は
+       各自の端末で行われるので、保存先が結果を書き換えることもできない。
    ══════════════════════════════════════════════════════════════ */
 
-/* ── SHA-256（自前実装：どのブラウザでも同じ結果になる） ── */
+/* ── SHA-256（自前実装：http でも動くように） ── */
 const _K=new Uint32Array([
 0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
 0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
@@ -188,30 +192,23 @@ function sha256Bytes(data){
 const _enc=new TextEncoder();
 function sha256Hex(s){const b=sha256Bytes(_enc.encode(s));let r='';for(let i=0;i<32;i++)r+=b[i].toString(16).padStart(2,'0');return r;}
 
-/* ── あみだの横線を決める（封印番号＋全員の4桁から一意に決まる） ──
-
-   【なぜ単純に横線を引くだけではダメか】
-   横線をランダムに引くだけだと、あみだは「隣どうしの入れ替え」を
-   くり返す動きになるため、出発点の近くに留まりやすくなります。
-   実測では、1番の縦線が1番の枠に当たる確率が12番の枠の15倍もあり、
-   当番決めには使えません。
-
-   そこで2段構えにしています。
-     前半：見た目どおりのランダムな横線を引く（あみだらしさ）
-     後半：先に完全な一様ランダムで決めた「正解の並び」に合わせるための
-           横線を引く（奇偶転置ソート。隣どうしの入れ替えだけで
-           n段あれば必ず目的の並びにできる）
-   結果として、最終的な並びは<b>完全に一様</b>になります。
-   後半の横線も「隣どうしを結ぶ普通の横線」なので、
-   出来上がった図は普通のあみだくじとして正しくたどれます。            */
-function makeStream(seedHex){          // SHA-256を連鎖させた乱数バイト列
+/* ── あみだの横線を決める ─────────────────────────────
+   横線をランダムに引くだけだと、出発点の近くに当たりやすいという強い偏りが
+   出る（12人で実測したところ、1番の縦線が1番の枠に当たる確率は12番の枠の
+   約15倍）。そこで
+     前半：見た目どおりのランダムな横線を引く
+     後半：先に完全な一様ランダムで決めた「正解の並び」へそろえる横線を引く
+           （奇偶転置ソート。隣どうしの入れ替えだけでn段あれば必ず届く）
+   としている。後半の横線も普通の横線なので、図は普通のあみだくじとして
+   正しくたどれる。                                                   */
+function makeStream(seedHex){
   let buf=null,i=32,c=0;
   return function(){
     if(i>=32){buf=sha256Bytes(_enc.encode(seedHex+":"+c));c++;i=0;}
     return buf[i++];
   };
 }
-function randBelow(next,k){            // 0以上k未満を偏りなく取り出す
+function randBelow(next,k){
   if(k<=1)return 0;
   const limit=256-(256%k);
   for(;;){const b=next();if(b<limit)return b%k;}
@@ -219,8 +216,7 @@ function randBelow(next,k){            // 0以上k未満を偏りなく取り出
 function amidaBuild(mixHex,n){
   const next=makeStream(mixHex);
   const randLv=Math.max(9,n*2),levels=randLv+n;
-  const bridges=[],occ=[...Array(n)].map((_,i)=>i);   // occ[p]=位置pにいる人
-  // 前半：ランダムな横線（37.5%／隣どうしは作らない）
+  const bridges=[],occ=[...Array(n)].map((_,i)=>i);
   for(let lv=0;lv<randLv;lv++){
     let col=0;
     while(col<n-1){
@@ -228,10 +224,8 @@ function amidaBuild(mixHex,n){
       else col++;
     }
   }
-  // 正解の並びを一様ランダムに決める（フィッシャー・イェーツ）
   const pi=[...Array(n)].map((_,i)=>i);
   for(let i=n-1;i>0;i--){const j=randBelow(next,i+1);const t=pi[i];pi[i]=pi[j];pi[j]=t;}
-  // 後半：奇偶転置ソートで正解の並びへそろえる
   const arr=occ.map(x=>pi[x]);
   for(let r=0;r<n;r++){
     for(let p=r%2;p+1<n;p+=2){
@@ -256,45 +250,33 @@ function amidaTrace(entry,bridges,levels){
   }
   return {goal:pos,path};
 }
-function calcMix(seed,tokens){return sha256Hex(seed+"|"+tokens.join("|"));}
-function drawResults(K){
-  const n=K.e.length, tokens=K.e.map(x=>x[1]);
-  const mix=calcMix(K.d,tokens);
+/** 全員そろった後、各自の端末でこれを計算する（保存先は関与しない） */
+function drawResults(C){
+  const n=C.e.length;
+  const mix=sha256Hex(C.d+"|"+C.e.map(x=>x.k).join("|"));
   const {levels,bridges}=amidaBuild(mix,n);
-  const res=K.e.map((x,i)=>{
+  const res=C.e.map((x,i)=>{
     const t=amidaTrace(i,bridges,levels);
-    return {name:x[0],token:x[1],entry:i,goal:t.goal,path:t.path,slot:K.s[t.goal]};
+    return {name:x.n,token:x.k,entry:i,goal:t.goal,path:t.path,slot:C.s[t.goal]};
   }).sort((a,b)=>a.goal-b.goal);
   return {mix,levels,bridges,res};
 }
 
-/* ── URL に載せる（#以降なのでサーバーには一切送られない） ── */
-function b64e(str){
-  const b=_enc.encode(str);let s='';
-  for(let i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);
-  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-function b64d(s){
-  s=s.replace(/-/g,'+').replace(/_/g,'/');
-  const bin=atob(s+'==='.slice((s.length+3)%4));
-  const b=new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
-  return new TextDecoder().decode(b);
-}
-const packK=o=>b64e(JSON.stringify(o));
-const unpackK=s=>JSON.parse(b64d(s));
-const baseURL=()=>location.origin+location.pathname;
-const urlFor=(k,o)=>baseURL()+'#'+k+'='+packK(o);
-
-/* ── ちいさな道具 ── */
+/* ── 小道具 ───────────────────────────────────────── */
 const $=id=>document.getElementById(id);
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function toast(m,err){const t=$('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',3000);}
-function rndHex(n){
-  const a=new Uint8Array(n);
-  (window.crypto||window.msCrypto).getRandomValues(a);
-  return [...a].map(x=>x.toString(16).padStart(2,'0')).join('');
-}
+function toast(m,err){const t=$('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',3200);}
+function b64e(str){const b=_enc.encode(str);let s='';for(let i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function b64d(s){s=s.replace(/-/g,'+').replace(/_/g,'/');const bin=atob(s+'==='.slice((s.length+3)%4));
+  const b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
+  return new TextDecoder().decode(b);}
+const baseURL=()=>location.origin+location.pathname;
+const myName=()=>localStorage.getItem('amida_me')||'';
+const setMyName=v=>localStorage.setItem('amida_me',v);
+const getAPI=()=>localStorage.getItem('amida_api')||'';
+const setAPI=v=>localStorage.setItem('amida_api',v);
+
 async function copyText(t,msg){
   try{
     if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(t);}
@@ -305,104 +287,189 @@ async function copyText(t,msg){
 }
 async function shareText(t){
   if(navigator.share){try{await navigator.share({text:t});return;}catch(e){if(e&&e.name==='AbortError')return;}}
-  copyText(t,'コピーしました。LINEに貼り付けてください。');
+  copyText(t,'コピーしました。メールなどに貼り付けてください。');
 }
-const myName=()=>localStorage.getItem('amida_me')||'';
-const setMyName=v=>localStorage.setItem('amida_me',v);
-const seedKey=id=>'amida_seed_'+id;
+
+/* ── 保存先とのやり取り ──────────────────────────────
+   Content-Type を付けずに送るのがコツ。付けると事前確認（preflight）が
+   走り、Apps Script では通らなくなる。                              */
+async function api(action,body){
+  const url=ST.api||getAPI();
+  if(!url) throw new Error('保存先が設定されていません。');
+  let r;
+  try{
+    r=await fetch(url,{method:'POST',redirect:'follow',
+      body:JSON.stringify(Object.assign({action},body||{}))});
+  }catch(e){
+    throw new Error('保存先につながりません。通信環境と、保存先URLが正しいかを確認してください。');
+  }
+  const txt=await r.text();
+  let j;
+  try{ j=JSON.parse(txt); }
+  catch(e){ throw new Error('保存先の設定が正しくありません（アクセス権を「全員」にして再デプロイしてください）'); }
+  if(!j.ok) throw new Error(j.error||'エラーが発生しました');
+  return j;
+}
 
 /* ══════════════════════════════════════════════════════════════
-   画面の切り替え（URLの # を見て判断）
+   画面の切り替え
    ══════════════════════════════════════════════════════════════ */
-function go(hash){location.hash=hash;if(!hash)route();}
+let ST={api:'',id:'',cur:null,pick:null,token:'',busy:false,sig:''};
+let timer=null;
+
+function go(hash){ location.hash=hash; if(!hash) route(); }
 window.addEventListener('hashchange',route);
 
 function route(){
+  clearInterval(timer); timer=null;
+  $('live').style.display='none';
   const h=location.hash.replace(/^#/,'');
-  const m=h.match(/^([shr])=(.+)$/);
+  const m=h.match(/^j=(.+)$/);
+  if(m){
+    try{
+      const o=JSON.parse(b64d(m[1]));
+      ST.api=o.u; ST.id=o.i; setAPI(o.u);
+      ST.cur=null; ST.sig='';
+      $('app').innerHTML='<div class="card"><div class="hint">読み込んでいます…</div></div>';
+      $('live').style.display='';
+      poll();
+      timer=setInterval(poll,3000);
+      return;
+    }catch(e){
+      $('app').innerHTML='<div class="alert alert-err"><b>URLが読み取れませんでした。</b><br>途中で切れている可能性があります。幹事にURLを送り直してもらってください。</div>';
+      return;
+    }
+  }
+  ST.api=getAPI();
+  $('sub').textContent='当番決め';
+  if(!ST.api) viewSetup(); else viewHome();
+}
+
+function live(on,txt){
+  $('live').className='live'+(on?'':' off');
+  $('live-t').textContent=txt;
+}
+
+async function poll(){
+  if(ST.busy) return;
   try{
-    if(!m){ $('sub').textContent='当番決め'; return viewHome(); }
-    const K=unpackK(m[2]);
-    $('sub').textContent=K.t||'当番決め';
-    if(m[1]==='r') return viewResult(K);
-    if(m[1]==='h') return viewHost(K,true);
-    return viewJoin(K);
+    const j=await api('state',{id:ST.id});
+    live(true,'自動更新中');
+    const c=j.current;
+    const sig=JSON.stringify([c.status,c.e]);
+    if(sig!==ST.sig){
+      const was=ST.cur&&ST.cur.status;
+      ST.sig=sig; ST.cur=c;
+      $('sub').textContent=c.t;
+      if(c.status==='open') viewOpen(c); else viewResult(c);
+      if(was==='open'&&c.status==='revealed') setTimeout(playMine,500);
+    }
   }catch(e){
-    $('app').innerHTML='<div class="alert alert-err"><b>URLが読み取れませんでした。</b><br>途中で切れている可能性があります。LINEのメッセージをもう一度開き直すか、幹事にURLを送り直してもらってください。</div>';
+    live(false,'接続待ち');
+    if(!ST.cur) $('app').innerHTML=`<div class="alert alert-err">${esc(e.message)}</div>
+      <button class="btn btn-ghost" onclick="go('')">最初へ</button>`;
   }
 }
 
-/* ─────────────── ホーム ─────────────── */
-function viewHome(){
+/* ─────────── 保存先の設定（最初の1回だけ） ─────────── */
+function viewSetup(){
   $('app').innerHTML=`
   <div class="info">
-    <b>集まらずに、スマホだけで当番を決めるためのページです。</b><br>
-    紙のあみだくじと同じように、誰がどこにつながるかは最後まで分かりません。サーバーを使わないので、職員名がインターネット上に保存されることもありません。
+    <b>最初に1回だけ、保存先の設定が必要です。</b><br>
+    参加者が選んだ内容を預ける場所を用意します。あなたのGoogleアカウントの中に作るので、費用はかからず、外部の会社に職員名が渡ることもありません。
   </div>
   <div class="card">
-    <div class="ct">はじめての方へ（流れ）</div>
-    <div class="step"><div class="step-n">1</div><div class="step-b"><b>幹事がくじを作る</b>参加者名と、当番の日を入力します。</div></div>
-    <div class="step"><div class="step-n">2</div><div class="step-b"><b>URLをLINEに送る</b>グループに1回貼るだけです。</div></div>
-    <div class="step"><div class="step-n">3</div><div class="step-b"><b>各自がスマホで縦線を選ぶ</b>出てきた受付コード（例：<b>木下 7-4821</b>）をLINEに返信します。</div></div>
-    <div class="step"><div class="step-n">4</div><div class="step-b"><b>幹事がまとめて抽選</b>LINEのトークをコピーして貼り付けるだけ。結果URLをグループに送って全員で確認します。</div></div>
+    <div class="ct">保存先を用意する手順</div>
+    <div class="step"><div class="step-n">1</div><div class="step-b"><b>script.google.com を開く</b>「新しいプロジェクト」を押します。</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-b"><b>apps-script.gs の中身を貼り付ける</b>もとから書かれている文字は全部消してから貼り付けてください。</div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-b"><b>デプロイ → 新しいデプロイ</b>種類は「ウェブアプリ」、アクセスできるユーザーは<b>「全員」</b>を選びます。</div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-b"><b>出てきたURLをコピー</b><code>…/exec</code> で終わるURLです。</div></div>
   </div>
-  <button class="btn btn-primary" onclick="viewCreate()">🎋 幹事：新しいくじを作る</button>
-  <button class="btn btn-ghost" onclick="reopen()">📂 作りかけ・作成済みのくじを開く</button>
-  <div class="card" style="margin-top:14px">
-    <div class="ct">参加者の方へ</div>
-    <div class="hint">幹事から届いた<b>URLを開いてください</b>。このページから操作することはありません。</div>
+  <div class="card">
+    <div class="ct">保存先のURL</div>
+    <input type="text" id="s-api" placeholder="https://script.google.com/macros/s/……/exec" value="${esc(getAPI())}">
+    <div class="hint" style="margin:8px 0 12px">このURLは、参加者に配るURLの中に自動で入ります。参加者側での設定は不要です。</div>
+    <button class="btn btn-primary" onclick="saveAPI()">保存してつながるか確かめる</button>
   </div>`;
 }
-function reopen(){
-  const ks=Object.keys(localStorage).filter(k=>k.startsWith('amida_cfg_'));
-  if(!ks.length) return toast('この端末には保存されたくじがありません。',true);
-  const items=ks.map(k=>JSON.parse(localStorage.getItem(k))).sort((a,b)=>(b.ts||0)-(a.ts||0));
-  $('app').innerHTML=`<div class="card"><div class="ct">この端末で作ったくじ</div>
-    ${items.map(x=>`<button class="btn" onclick="go('h=${packK(x.K)}')">
-      <span style="text-align:left;flex:1"><b>${esc(x.K.t)}</b><br>
-      <span class="hint">${esc(x.when||'')}／${x.K.p.length}人</span></span></button>`).join('')}
-    </div><button class="btn btn-ghost" onclick="go('')">戻る</button>`;
+async function saveAPI(){
+  const v=$('s-api').value.trim();
+  if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(v))
+    return toast('「https://script.google.com/…/exec」の形のURLを入れてください。',true);
+  setAPI(v); ST.api=v;
+  try{
+    await api('state',{id:'__test__'});
+    toast('つながりました。');
+  }catch(e){
+    // くじが無いというエラーなら、つながってはいる
+    if(/見つかりません/.test(e.message)){ toast('つながりました。'); }
+    else { return toast(e.message,true); }
+  }
+  viewHome();
 }
 
-/* ─────────────── 幹事：くじを作る ─────────────── */
+/* ─────────── ホーム ─────────── */
+function viewHome(){
+  const recent=JSON.parse(localStorage.getItem('amida_recent')||'[]');
+  $('app').innerHTML=`
+  <div class="info">
+    <b>集まらずに当番を決めるためのページです。</b><br>
+    幹事がくじを作ってURLを配り、参加者はそれを開いて縦線を選ぶだけ。
+    <b>選んだ内容は自動で保存され</b>、全員そろった瞬間に自動で抽選されます。返信は要りません。
+  </div>
+  <div class="card">
+    <div class="ct">流れ</div>
+    <div class="step"><div class="step-n">1</div><div class="step-b"><b>幹事がくじを作る</b>参加者名と当番の日を入力します。</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-b"><b>URLを1回配る</b>メールでもチャットでも構いません。以降のやり取りは不要です。</div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-b"><b>各自が縦線を選ぶ</b>誰が何番を取ったかは全員の画面にすぐ反映されます。</div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-b"><b>全員そろうと自動で抽選</b>開いている人の画面に、結果とあみだ図が一斉に出ます。</div></div>
+  </div>
+  <button class="btn btn-primary" onclick="viewCreate()">🎋 幹事：新しいくじを作る</button>
+  ${recent.length?`<div class="card"><div class="ct">最近作ったくじ</div>
+    ${recent.map(x=>`<button class="btn" onclick="go('j=${esc(x.h)}')">
+      <span style="text-align:left;flex:1"><b>${esc(x.t)}</b><br><span class="hint">${esc(x.w)}</span></span></button>`).join('')}
+    </div>`:''}
+  <button class="btn btn-ghost no-print" onclick="viewSetup()">⚙ 保存先の設定を変える</button>`;
+}
+
+/* ─────────── くじを作る ─────────── */
 function viewCreate(){
   $('app').innerHTML=`
   <div class="card">
     <div class="ct">1. 何を決めますか</div>
-    <div class="fld">
-      <select id="f-mode" onchange="onMode()">
-        <option value="assign">担当日を直接わりあてる</option>
-        <option value="order">選ぶ順番（1番〜）を決める</option>
-      </select>
-    </div>
-    <div class="hint" id="mode-hint"></div>
+    <select id="f-mode" onchange="onMode()">
+      <option value="assign">担当日を直接わりあてる</option>
+      <option value="order">選ぶ順番（1番〜）を決める</option>
+    </select>
+    <div class="hint" id="mode-hint" style="margin-top:8px"></div>
   </div>
-
   <div class="card">
     <div class="ct">2. タイトル</div>
     <input type="text" id="f-title" value="シルバーウィーク当直">
   </div>
-
   <div class="card">
     <div class="ct">3. 参加者（1行に1人）</div>
     <textarea id="f-names" rows="7" placeholder="木下&#10;田中&#10;佐藤"></textarea>
     <div class="hint" style="margin-top:6px" id="n-cnt"></div>
   </div>
-
   <div class="card" id="slot-card">
     <div class="ct">4. くじの中身（1行に1つ）</div>
     <div class="hint" style="margin-bottom:7px">人数より少ない分は自動で「なし」が入ります。</div>
     <textarea id="f-slots" rows="6" placeholder="9/19(土) 当直&#10;9/20(日) 当直&#10;9/21(月) 当直&#10;9/22(火) 当直"></textarea>
     <div class="hint" style="margin-top:6px" id="s-cnt"></div>
   </div>
-
-  <button class="btn btn-primary" onclick="doCreate()">くじを作る</button>
-  <button class="btn btn-ghost" onclick="go('')">戻る</button>`;
+  <div class="card">
+    <div class="ct">5. 幹事パスコード（任意）</div>
+    <div class="hint" style="margin-bottom:8px">くじを片づけるときに必要です。空欄でも構いません。</div>
+    <input type="text" id="f-pass" placeholder="例）1234" maxlength="12" style="width:140px">
+  </div>
+  <button class="btn btn-primary" id="c-btn" onclick="doCreate()">くじを作って受付を始める</button>
+  <button class="btn btn-ghost" onclick="viewHome()">戻る</button>`;
   $('f-names').addEventListener('input',cntUpd);
   $('f-slots').addEventListener('input',cntUpd);
   onMode();
 }
-const lines=el=>(($(el)||{}).value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+const lines=id=>(($(id)||{}).value||'').split('\n').map(s=>s.trim()).filter(Boolean);
 function onMode(){
   const m=$('f-mode').value;
   $('slot-card').style.display=m==='assign'?'':'none';
@@ -413,300 +480,206 @@ function onMode(){
 }
 function cntUpd(){
   const n=lines('f-names').length,s=lines('f-slots').length;
-  $('n-cnt').textContent=`${n}人`;
-  if($('f-mode').value==='assign')
-    $('s-cnt').innerHTML=`入力 ${s}件／参加者 ${n}人　→ 残り <b>${Math.max(0,n-s)}</b>件は「なし」になります`
-      +(s>n?' <span style="color:var(--danger)">※人数を超えた分は切り捨てられます</span>':'');
-  else $('s-cnt').textContent='';
+  $('n-cnt').textContent=n+'人';
+  $('s-cnt').innerHTML=$('f-mode').value==='assign'
+    ?`入力 ${s}件／参加者 ${n}人　→ 残り <b>${Math.max(0,n-s)}</b>件は「なし」になります`
+      +(s>n?' <span style="color:var(--danger)">※人数を超えた分は切り捨てられます</span>':'')
+    :'';
 }
-function doCreate(){
+async function doCreate(){
   const names=lines('f-names');
   if(names.length<2) return toast('参加者を2人以上入力してください。',true);
-  if(new Set(names).size!==names.length) return toast('同じ名前が複数あります。区別できるようにしてください。',true);
-  const mode=$('f-mode').value;
-  const n=names.length;
-  let slots=mode==='order'?[...Array(n)].map((_,i)=>`${i+1}番`)
-                          :lines('f-slots').concat(Array(n).fill('なし')).slice(0,n);
-  const seed=rndHex(16);
-  const id=rndHex(4);
-  const K={v:1,id,t:$('f-title').value.trim()||'あみだくじ',m:mode,p:names,s:slots,c:sha256Hex(seed)};
-  localStorage.setItem(seedKey(id),seed);
-  localStorage.setItem('amida_cfg_'+id,JSON.stringify({K,ts:Date.now(),when:new Date().toLocaleString('ja-JP')}));
-  go('h='+packK(K));
+  if(new Set(names).size!==names.length) return toast('同じ名前があります。区別できるようにしてください。',true);
+  const b=$('c-btn'); b.disabled=true; b.textContent='作成中…';
+  try{
+    const j=await api('create',{
+      title:$('f-title').value.trim()||'あみだくじ',
+      mode:$('f-mode').value, names, slots:lines('f-slots'),
+      passcode:$('f-pass').value.trim()
+    });
+    const h=b64e(JSON.stringify({u:ST.api||getAPI(),i:j.current.id}));
+    const recent=JSON.parse(localStorage.getItem('amida_recent')||'[]');
+    recent.unshift({h,t:j.current.t,w:new Date().toLocaleString('ja-JP')});
+    localStorage.setItem('amida_recent',JSON.stringify(recent.slice(0,10)));
+    go('j='+h);
+  }catch(e){
+    toast(e.message,true); b.disabled=false; b.textContent='くじを作って受付を始める';
+  }
 }
 
-/* ─────────────── 幹事：受付〜抽選 ─────────────── */
-function viewHost(K){
-  // 幹事用URLの控えから開いた場合は封印番号が K.d に入っている。
-  // この端末に保存し直したうえで K からは必ず取り除く
-  //（取り除かないと、参加者に送るURLに封印番号が混ざってしまう）
-  let seed=K.d||localStorage.getItem(seedKey(K.id));
-  if(K.d){localStorage.setItem(seedKey(K.id),K.d);delete K.d;}
-  const joinURL=urlFor('s',K);
-  if(!seed){
-    $('app').innerHTML=`<div class="alert alert-err">
-      <b>この端末に封印番号が保存されていません。</b><br>
-      くじを作った端末・ブラウザで開いてください。（作成時に保存した<b>幹事用URL</b>を開いても復元できます）</div>
-      <button class="btn btn-ghost" onclick="go('')">最初へ</button>`;
-    return;
-  }
-  const hostURL=urlFor('h',Object.assign({},K,{d:seed}));
+/* ─────────── 受付中 ─────────── */
+function viewOpen(c){
+  const me=myName();
+  const joined=c.e.filter(x=>x).map(x=>x.n);
+  const waiting=c.p.filter(x=>joined.indexOf(x)<0);
+  const iAmIn=joined.indexOf(me)>=0;
+  const shareURL=baseURL()+location.hash;
   $('app').innerHTML=`
-  <div class="alert alert-warn">
-    <b>ここは幹事用の画面です。</b>この画面のURLは<b>他の人に送らないでください</b>（封印番号が入っています）。
-  </div>
-
   <div class="card">
-    <div class="ct">1. 参加者に送るURL</div>
-    <div class="hint" style="margin-bottom:9px">LINEのグループに1回貼るだけです。全員がここから縦線を選びます。</div>
-    <div class="mono" id="join-url">${esc(joinURL)}</div>
-    <div class="btn-row">
-      <button class="btn btn-line" onclick="shareText(hostShareText())">LINEなどで送る</button>
-      <button class="btn" onclick="copyText($('join-url').textContent,'URLをコピーしました')">コピー</button>
+    <div class="stat">
+      <div><b>${c.done}/${c.n}</b><span>選択ずみ</span></div>
+      <div><b>${c.n-c.done}</b><span>待ち人数</span></div>
+      <div><b style="font-size:15px;padding:4px 0">${c.m==='assign'?'担当日':'順番'}</b><span>決めるもの</span></div>
     </div>
+    <div class="prog"><i style="width:${c.done/c.n*100}%"></i></div>
+    <div class="hint" style="margin-top:9px">全員が選び終わった瞬間に、自動で抽選が始まります。${
+      waiting.length?'<b>まだの人：</b>'+waiting.map(esc).join('、'):'<b style="color:var(--ok)">全員そろいました</b>'}</div>
   </div>
 
-  <div class="card">
-    <div class="ct">2. 返ってきたコードを集める</div>
-    <div class="hint" style="margin-bottom:9px">
-      LINEのトークを<b>全部まとめてコピーして貼り付ける</b>だけで自動で読み取ります。<br>
-      （LINE：トークルーム右上のメニュー → 「その他」→「トーク履歴を送信」でも、画面を長押しコピーでもOK）
-    </div>
-    <textarea id="h-paste" rows="6" placeholder="例）&#10;木下 7-4821&#10;田中 3-1109&#10;佐藤 12-0640"></textarea>
-    <div class="btn-row" style="margin-top:10px">
-      <button class="btn btn-primary" onclick="collect()">読み取る</button>
-      <button class="btn btn-ghost" onclick="$('h-paste').value='';collect()">クリア</button>
-    </div>
-  </div>
+  ${iAmIn?`<div class="alert alert-ok">
+    <b>${esc(me)}</b> さんの受付は完了しています。このページを開いたままお待ちください。
+    <button class="btn btn-sm no-print" style="margin-left:8px" onclick="doCancel()">選び直す</button>
+  </div>`:''}
 
-  <div id="h-status"></div>
-
-  <div class="card no-print">
-    <div class="ct">幹事用URLの控え（大切）</div>
-    <div class="hint" style="margin-bottom:9px">
-      スマホを変えたり履歴を消すと抽選できなくなります。このURLを<b>自分だけに</b>（自分へのLINEやメモアプリに）保存しておいてください。
-    </div>
-    <div class="btn-row">
-      <button class="btn" onclick="copyText('${esc(hostURL)}','幹事用URLをコピーしました')">幹事用URLをコピー</button>
-    </div>
-  </div>
-  <button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`;
-  window._K=K;window._seed=seed;
-  if(!localStorage.getItem('amida_cfg_'+K.id))
-    localStorage.setItem('amida_cfg_'+K.id,JSON.stringify({K,ts:Date.now(),when:new Date().toLocaleString('ja-JP')}));
-  const saved=localStorage.getItem('amida_paste_'+K.id);
-  if(saved){$('h-paste').value=saved;}
-  collect();
-}
-function hostShareText(){
-  const K=window._K;
-  return `【${K.t}】あみだくじで${K.m==='assign'?'当番':'順番'}を決めます。\n`
-    +`下のURLを開いて、縦線を1本選んで出てきたコードをこのトークに返信してください。\n`
-    +`（早い者勝ちではありません。まだ誰にも結果は分かりません）\n\n`+urlFor('s',K);
-}
-
-/* LINEのトークから「名前 番号-4桁」を読み取る */
-function parseCodes(text,roster){
-  const found={};   // name -> {line,token}
-  const dup=[];
-  for(const raw of String(text).split(/\r?\n/)){
-    const mm=raw.match(/(\d{1,2})\s*[-‐‑–—ー－]\s*(\d{4})/);
-    if(!mm) continue;
-    // その行に含まれる参加者名のうち、いちばん長く一致するものを採用
-    let hit=null;
-    for(const nm of roster){ if(raw.indexOf(nm)>=0 && (!hit||nm.length>hit.length)) hit=nm; }
-    if(!hit) continue;
-    found[hit]={line:parseInt(mm[1],10),token:mm[2]};   // 同じ人が複数回送ったら最後を採用
-  }
-  const byLine={};
-  for(const nm in found){
-    const L=found[nm].line;
-    (byLine[L]=byLine[L]||[]).push(nm);
-  }
-  for(const L in byLine) if(byLine[L].length>1) dup.push({line:+L,names:byLine[L]});
-  return {found,dup};
-}
-function collect(){
-  const K=window._K,n=K.p.length;
-  const text=$('h-paste').value;
-  localStorage.setItem('amida_paste_'+K.id,text);
-  const {found,dup}=parseCodes(text,K.p);
-  const miss=K.p.filter(nm=>!found[nm]);
-  const bad=Object.keys(found).filter(nm=>found[nm].line<1||found[nm].line>n);
-  const ok=miss.length===0&&dup.length===0&&bad.length===0;
-  const dupNames=[].concat(...dup.map(d=>d.names));
-
-  $('h-status').innerHTML=`
-  <div class="card">
-    <div class="ct">3. 受付状況（${Object.keys(found).length}/${n}人）</div>
-    <table class="tbl">
-      <thead><tr><th style="width:52px">縦線</th><th>名前</th><th style="width:70px">4桁</th></tr></thead>
-      <tbody>${K.p.map(nm=>{
-        const f=found[nm];
-        const isDup=dupNames.indexOf(nm)>=0;
-        const isBad=f&&(f.line<1||f.line>n);
-        return `<tr class="${isDup||isBad?'bad':''}">
-          <td><b>${f?f.line:'—'}</b></td>
-          <td>${esc(nm)}${isDup?' <span style="color:var(--danger);font-size:11px">重複</span>':''}${isBad?' <span style="color:var(--danger);font-size:11px">範囲外</span>':''}</td>
-          <td style="font-family:monospace">${f?esc(f.token):'<span style="color:var(--muted-2)">未</span>'}</td>
-        </tr>`;}).join('')}
-      </tbody>
-    </table>
-    ${miss.length?`<div class="alert alert-warn" style="margin-top:12px">まだの人：<b>${miss.map(esc).join('、')}</b></div>`:''}
-    ${dup.length?`<div class="alert alert-err" style="margin-top:12px">
-      同じ縦線を選んだ人がいます。<br>${dup.map(d=>`<b>${d.line}番</b>：${d.names.map(esc).join('・')}`).join('<br>')}
-      <br>どちらかに別の空き番号を選び直してもらい、新しいコードを貼り直してください。</div>`:''}
-    ${bad.length?`<div class="alert alert-err" style="margin-top:12px">1〜${n}以外の番号があります：${bad.map(esc).join('、')}</div>`:''}
-  </div>
-  <button class="btn btn-primary" ${ok?'':'disabled'} onclick="doReveal()">
-    ${ok?'🎋 抽選する（全員そろいました）':'全員そろうまで抽選できません'}
-  </button>`;
-  window._found=found;
-}
-function doReveal(){
-  const K=window._K,found=window._found,n=K.p.length;
-  const e=[];
-  for(let i=1;i<=n;i++){
-    const nm=K.p.find(x=>found[x]&&found[x].line===i);
-    if(!nm) return toast('受付内容に抜けがあります。',true);
-    e.push([nm,found[nm].token]);
-  }
-  const R=Object.assign({},K,{d:window._seed,e,at:new Date().toLocaleString('ja-JP')});
-  delete R.p;
-  go('r='+packK(R));
-}
-
-/* ─────────────── 参加者：縦線をえらぶ ─────────────── */
-function viewJoin(K){
-  const n=K.p.length;
-  const isHost=!!localStorage.getItem(seedKey(K.id));
-  $('app').innerHTML=`
-  <div class="info">
-    <b>${esc(K.t)}</b><br>
-    ${n}人であみだくじをします。${K.m==='assign'?'引いた結果がそのまま当番になります。':'引いた結果が「選ぶ順番」になります。'}<br>
-    どの番号がどこにつながるかは<b>まだ誰にも分かりません</b>（幹事にも分かりません）。
-  </div>
-
+  ${c.done===c.n?'':`
   <div class="card">
     <div class="ct">1. あなたの名前</div>
     <select id="j-name" onchange="onJName()">
       <option value="">-- 選んでください --</option>
-      ${K.p.map(x=>`<option value="${esc(x)}"${x===myName()?' selected':''}>${esc(x)}</option>`).join('')}
+      ${c.p.map(x=>`<option value="${esc(x)}"${(x===me&&!iAmIn)?' selected':''}${joined.indexOf(x)>=0?' disabled':''}>${esc(x)}${joined.indexOf(x)>=0?'（選択ずみ）':''}</option>`).join('')}
     </select>
   </div>
 
   <div class="card">
     <div class="ct">2. 縦線を1本えらぶ</div>
-    <div class="hint" style="margin-bottom:10px">
-      すでに他の人が取った番号は選べません。下の欄にLINEの返信を貼り付けると、埋まっている番号に色がつきます。
-    </div>
-    <textarea id="j-paste" rows="3" placeholder="（任意）LINEのトークを貼り付けると、空いている番号が分かります" oninput="markTaken()"></textarea>
-    <div class="pick-grid" id="j-grid" style="margin-top:12px">
-      ${[...Array(n)].map((_,i)=>`<button class="pick" id="p${i+1}" onclick="jPick(${i+1})">
-        <span class="n">${i+1}</span><span class="s">空き</span></button>`).join('')}
+    <div class="hint" style="margin-bottom:10px">どの番号がどこにつながるかは、まだ誰にも分かりません（幹事にも分かりません）。</div>
+    <div class="pick-grid">
+      ${c.e.map((x,i)=>x
+        ? `<button class="pick taken${x.n===me?' mine':''}" disabled><span class="n">${i+1}</span><span class="s">${esc(x.n)}</span></button>`
+        : `<button class="pick${ST.pick===i?' sel':''}" id="p${i}" onclick="jPick(${i})"><span class="n">${i+1}</span><span class="s">${ST.pick===i?'これにする':'空き'}</span></button>`
+      ).join('')}
     </div>
   </div>
 
   <div class="card">
     <div class="ct">3. 好きな4桁の数字</div>
     <div class="hint" style="margin-bottom:10px">
-      この数字は<b>全員分をまぜて横線を作る材料</b>になります。誰か1人が結果を操作できないようにするための仕組みです。誕生日でも語呂合わせでも構いません。
+      この数字は<b>全員分をまぜて横線を作る材料</b>になります。誰か1人が結果を操作できないようにするための仕組みです。
     </div>
     <div style="display:flex;gap:9px;align-items:center">
       <input type="text" id="j-token" inputmode="numeric" maxlength="4" placeholder="0000"
-        style="font-size:26px;letter-spacing:.3em;text-align:center;font-weight:700;flex:1">
+        style="font-size:26px;letter-spacing:.3em;text-align:center;font-weight:700;flex:1" value="${esc(ST.token)}">
       <button class="btn btn-sm" style="flex-shrink:0;padding:12px 14px" onclick="jRand()">🎲 おまかせ</button>
     </div>
   </div>
+  <button class="btn btn-primary" id="j-btn" onclick="doJoin()">この内容で確定する</button>`}
 
-  <button class="btn btn-primary" onclick="jMake()">受付コードを作る</button>
-  <div id="j-out"></div>
+  <div class="card no-print">
+    <div class="ct">みんなの状況</div>
+    <table class="tbl">
+      <thead><tr><th style="width:48px">縦線</th><th>名前</th><th style="width:64px">4桁</th></tr></thead>
+      <tbody>${c.e.map((x,i)=>`<tr class="${x&&x.n===me?'me':''}">
+        <td><b>${i+1}</b></td>
+        <td>${x?esc(x.n):'<span style="color:var(--muted-2)">— 未選択 —</span>'}</td>
+        <td style="font-family:monospace">${x?esc(x.k):'-'}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
 
-  <div class="card no-print" style="margin-top:4px">
+  <div class="card no-print">
     <div class="ct">くじの中身</div>
-    <div>${K.s.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
+    <div>${c.s.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
   </div>
 
-  ${fairBox(K,false)}
-  ${isHost?`<button class="btn btn-ghost no-print" onclick="go('h=${packK(K)}')">⚙ 幹事メニューを開く</button>`:''}`;
-  window._K=K;
-  $('j-token').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);});
-  markTaken();
+  ${fairBox(c,false)}
+
+  <div class="card no-print">
+    <div class="ct">幹事メニュー</div>
+    <div class="hint" style="margin-bottom:9px">このURLを全員に配ってください。1回配れば、あとのやり取りは要りません。</div>
+    <div class="mono">${esc(shareURL)}</div>
+    <div class="btn-row" style="margin-bottom:10px">
+      <button class="btn btn-primary" onclick="shareText(shareMsg())">配る</button>
+      <button class="btn" onclick="copyText(baseURL()+location.hash,'URLをコピーしました')">コピー</button>
+    </div>
+    <div class="hint" style="margin-bottom:9px">来られない人がいる場合は、上のフォームでその人の名前を選んで代理入力できます。</div>
+    <button class="btn btn-danger" onclick="askReset()">🗑 このくじを取り消す</button>
+  </div>`;
+  const t=$('j-token');
+  if(t) t.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);ST.token=e.target.value;});
 }
-function onJName(){const v=$('j-name').value;if(v)setMyName(v);markTaken();}
-function markTaken(){
-  const K=window._K,n=K.p.length;
-  const {found}=parseCodes($('j-paste').value,K.p);
-  const me=$('j-name').value;
-  for(let i=1;i<=n;i++){
-    const who=Object.keys(found).find(nm=>found[nm].line===i&&nm!==me);
-    const el=$('p'+i);if(!el)continue;
-    if(who){el.className='pick taken';el.disabled=true;el.querySelector('.s').textContent=who;}
-    else{el.className='pick'+(window._pick===i?' sel':'');el.disabled=false;el.querySelector('.s').textContent=window._pick===i?'これにする':'空き';}
-  }
+function shareMsg(){
+  const c=ST.cur;
+  return `【${c.t}】あみだくじで${c.m==='assign'?'当番':'順番'}を決めます。\n`
+    +`下のURLを開いて、名前を選び、好きな縦線を1本選んでください。\n`
+    +`返信は不要です。全員そろうと自動で抽選され、結果が同じ画面に出ます。\n\n`
+    +baseURL()+location.hash;
 }
-function jPick(i){window._pick=i;markTaken();}
-function jRand(){$('j-token').value=String(Math.floor(Math.random()*10000)).padStart(4,'0');}
-function jMake(){
-  const nm=$('j-name').value;
-  if(!nm)return toast('名前を選んでください。',true);
-  if(!window._pick)return toast('縦線を1本選んでください。',true);
-  const tk=$('j-token').value.trim();
-  if(!/^\d{4}$/.test(tk))return toast('4桁の数字を入れてください。',true);
-  setMyName(nm);
-  const code=`${nm} ${window._pick}-${tk}`;
-  $('j-out').innerHTML=`
-  <div class="code-box">
-    <div class="cl">あなたの受付コード</div>
-    <div class="cv">${esc(code)}</div>
-    <div class="cl">この1行をLINEに返信してください</div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-line" onclick="shareText('${esc(code)}')">LINEなどで送る</button>
-    <button class="btn" onclick="copyText('${esc(code)}')">コピー</button>
-  </div>
-  <div class="alert alert-ok">送信したら完了です。全員そろうと幹事から結果URLが届きます。<br>
-  <span class="hint">※送ったあとで気が変わっても、他の人が同じ番号を取っていなければ選び直して送り直せます（新しいコードが優先されます）。</span></div>`;
-  $('j-out').scrollIntoView({behavior:'smooth',block:'center'});
+function iAmIn(){return !!(ST.cur&&myName()&&ST.cur.e.some(x=>x&&x.n===myName()));}
+function onJName(){const v=$('j-name').value;if(v&&!iAmIn())setMyName(v);}
+function jPick(i){
+  ST.pick=i;
+  document.querySelectorAll('.pick:not(.taken)').forEach(el=>{el.className='pick';el.querySelector('.s').textContent='空き';});
+  const el=$('p'+i); if(el){el.className='pick sel';el.querySelector('.s').textContent='これにする';}
+}
+function jRand(){ST.token=String(Math.floor(Math.random()*10000)).padStart(4,'0');$('j-token').value=ST.token;}
+async function doJoin(){
+  const nm=($('j-name')||{}).value;
+  if(!nm) return toast('名前を選んでください。',true);
+  if(ST.pick==null) return toast('縦線を1本選んでください。',true);
+  const tk=($('j-token').value||'').trim();
+  if(!/^\d{4}$/.test(tk)) return toast('4桁の数字を入れてください。',true);
+  if(!iAmIn()) setMyName(nm);
+  const b=$('j-btn'); b.disabled=true; b.textContent='送信中…'; ST.busy=true;
+  try{
+    const j=await api('join',{id:ST.id,name:nm,entry:ST.pick,token:tk});
+    ST.pick=null; ST.token=''; ST.sig='';
+    toast('受付しました。全員そろうまでお待ちください。');
+  }catch(e){
+    toast(e.message,true); ST.sig='';
+    b.disabled=false; b.textContent='この内容で確定する';
+  }finally{ ST.busy=false; poll(); }
+}
+async function doCancel(){
+  ST.busy=true;
+  try{ await api('cancel',{id:ST.id,name:myName()}); ST.sig=''; toast('取り消しました。'); }
+  catch(e){ toast(e.message,true); }
+  finally{ ST.busy=false; poll(); }
+}
+function askReset(){
+  const p=prompt('幹事パスコードを入力してください（設定していない場合は空のままOK）','');
+  if(p===null) return;
+  (async()=>{
+    ST.busy=true;
+    try{ await api('reset',{id:ST.id,passcode:p}); toast('取り消しました。'); clearInterval(timer); go(''); }
+    catch(e){ toast(e.message,true); }
+    finally{ ST.busy=false; }
+  })();
 }
 
-/* ─────────────── 結果 ─────────────── */
+/* ─────────── 結果 ─────────── */
 const HUES=[0,28,50,88,140,168,196,220,258,288,318,340,12,64,110,180,240,300];
 const colorOf=i=>`hsl(${HUES[i%HUES.length]} 72% 45%)`;
 let _R=null;
 
-function viewResult(K){
-  const D=drawResults(K);
-  _R={K,D};
-  const okCommit=sha256Hex(K.d)===K.c;
+function viewResult(c){
+  clearInterval(timer); timer=null; $('live').style.display='none';
+  const D=drawResults(c);
+  _R={c,D};
+  const okCommit=sha256Hex(c.d)===c.c;
   const me=myName();
   const mine=D.res.find(r=>r.name===me);
   $('app').innerHTML=`
-  ${mine?`<div class="big"><div class="l">${esc(K.t)}　あなたの結果</div>
+  ${mine?`<div class="big"><div class="l">${esc(c.t)}　あなたの結果</div>
     <div class="n">${esc(mine.name)} さん（${mine.entry+1}番の縦線）</div>
     <div class="v">${esc(mine.slot)}</div></div>`:''}
 
   <div class="alert ${okCommit?'alert-ok':'alert-err'}">
-    <b>${okCommit?'✓ 検算OK':'✗ 検算に失敗しました'}</b>　${esc(K.at||'')}<br>
-    ${okCommit
-      ?'このページを開いた時点で、あなたの端末が結果を計算し直しました。線は後から書き換えられていません。'
-      :'封印番号が、最初に配られたURLのハッシュ値と一致しません。幹事に確認してください。'}
+    <b>${okCommit?'✓ 検算OK':'✗ 検算に失敗しました'}</b>　${esc(c.at||'')}<br>
+    ${okCommit?'このページを開いた時点で、あなたの端末が線を計算し直しました。保存先が結果を書き換えることはできません。'
+              :'封印番号が、最初に公開されたハッシュ値と一致しません。幹事に確認してください。'}
   </div>
 
   <div class="card">
     <div class="ct">結果</div>
     <table class="tbl">
-      <thead><tr><th>${K.m==='assign'?'担当':'順番'}</th><th>名前</th><th style="width:74px">コード</th></tr></thead>
+      <thead><tr><th>${c.m==='assign'?'担当':'順番'}</th><th>名前</th><th style="width:74px">縦線・4桁</th></tr></thead>
       <tbody>${D.res.map(r=>`<tr class="${r.name===me?'me':''}" onclick="playPath(${r.entry})" style="cursor:pointer">
         <td><span class="sw" style="background:${colorOf(r.entry)}"></span><b>${esc(r.slot)}</b></td>
         <td>${esc(r.name)}</td>
         <td style="color:var(--muted);font-family:monospace;font-size:12.5px">${r.entry+1}-${esc(r.token)}</td></tr>`).join('')}
       </tbody>
     </table>
-    <div class="hint" style="margin-top:9px">
-      行をタップすると、その人の線をたどります。<br>
-      <b>「コード」は自分がLINEに送ったものと同じか確認してください。</b>ここが同じなら、あなたの縦線と数字は正しく使われています。
-    </div>
+    <div class="hint" style="margin-top:9px">行をタップすると、その人の線をたどります。</div>
   </div>
 
   <div class="card">
@@ -720,41 +693,40 @@ function viewResult(K){
   </div>
 
   <div class="btn-row no-print">
-    <button class="btn btn-line" onclick="shareText(resultText())">結果をLINEで送る</button>
-    <button class="btn" onclick="copyText(location.href,'結果URLをコピーしました')">結果URLをコピー</button>
+    <button class="btn btn-primary" onclick="shareText(resultText())">結果を送る</button>
+    <button class="btn" onclick="window.print()">🖨 印刷</button>
   </div>
 
-  ${fairBox(K,true,D)}
+  ${fairBox(c,true,D)}
   <button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`;
-  drawAmida(K,D);
+  drawAmida(c,D);
   setTimeout(()=>mine?playPath(mine.entry):playAll(),350);
 }
 function resultText(){
-  const {K,D}=_R;
-  return `【${K.t}】あみだくじ結果（${K.at||''}）\n`
+  const {c,D}=_R;
+  return `【${c.t}】あみだくじ結果（${c.at||''}）\n`
     +D.res.map(r=>`${r.slot}　：　${r.name}`).join('\n')
-    +`\n\n※このURLを開くと、あみだ図と検算結果が見られます。\n`+location.href;
+    +`\n\n※このURLを開くと、あみだ図と検算結果が見られます。\n`+baseURL()+location.hash;
 }
 
-/* あみだ図の描画 */
 const MX=34,TOPY=52,LVH=11;
 let COLW=54;
-function xOf(i){return MX+i*COLW;}
-function drawAmida(K,D){
-  const n=K.e.length,lv=D.levels;
+const xOf=i=>MX+i*COLW;
+function drawAmida(c,D){
+  const n=c.e.length,lv=D.levels;
   COLW=Math.max(46,Math.min(64,Math.floor((Math.min(window.innerWidth,620)-40-MX*2)/Math.max(1,n-1))));
   const W=MX*2+(n-1)*COLW,botY=TOPY+lv*LVH,H=botY+66;
   let s=`<svg id="svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   for(let i=0;i<n;i++)s+=`<line x1="${xOf(i)}" y1="${TOPY}" x2="${xOf(i)}" y2="${botY}" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"/>`;
-  for(const[l,c]of D.bridges){const y=TOPY+(l+1)*LVH;
-    s+=`<line x1="${xOf(c)}" y1="${y}" x2="${xOf(c+1)}" y2="${y}" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"/>`;}
+  for(const[l,col]of D.bridges){const y=TOPY+(l+1)*LVH;
+    s+=`<line x1="${xOf(col)}" y1="${y}" x2="${xOf(col+1)}" y2="${y}" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"/>`;}
   s+=`<g id="paths"></g>`;
   for(let i=0;i<n;i++){
     s+=`<text x="${xOf(i)}" y="${TOPY-24}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${colorOf(i)}">${i+1}</text>`;
-    s+=`<text x="${xOf(i)}" y="${TOPY-7}" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">${esc(K.e[i][0])}</text>`;
+    s+=`<text x="${xOf(i)}" y="${TOPY-7}" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">${esc(c.e[i].n)}</text>`;
   }
   for(let i=0;i<n;i++){
-    const t=String(K.s[i]),parts=t.length>6?[t.slice(0,6),t.slice(6,13)]:[t];
+    const t=String(c.s[i]),parts=t.length>6?[t.slice(0,6),t.slice(6,13)]:[t];
     s+=`<text x="${xOf(i)}" y="${botY+16}" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">`
       +parts.map((p,k)=>`<tspan x="${xOf(i)}" dy="${k?12:0}">${esc(p)}</tspan>`).join('')+`</text>`;
   }
@@ -772,7 +744,7 @@ function pathD(r,levels){
 function clearPaths(){const g=$('paths');if(g)g.innerHTML='';}
 function playPath(entry,keep){
   if(!_R)return;
-  const r=_R.D.res.find(x=>x.entry===entry);const g=$('paths');
+  const r=_R.D.res.find(x=>x.entry===entry),g=$('paths');
   if(!r||!g)return;
   if(!keep)g.innerHTML='';
   const p=document.createElementNS('http://www.w3.org/2000/svg','path');
@@ -786,41 +758,46 @@ function playPath(entry,keep){
   requestAnimationFrame(()=>{p.style.strokeDashoffset=0;});
 }
 function playAll(){clearPaths();_R.D.res.slice().sort((a,b)=>a.entry-b.entry).forEach((r,k)=>setTimeout(()=>playPath(r.entry,true),k*150));}
+function playMine(){
+  if(!_R)return;
+  const r=_R.D.res.find(x=>x.name===myName());
+  r?playPath(r.entry):playAll();
+}
 
-/* ─────────────── 不正ができない仕組み ─────────────── */
-function fairBox(K,revealed,D){
+/* ─────────── 不正ができない仕組み ─────────── */
+function fairBox(c,revealed,D){
   return `
   <div class="card no-print">
     <div class="ct">不正ができない仕組み</div>
     <div class="hint" style="margin-bottom:10px">
-      ① くじを作った時点で幹事の端末が<b>封印番号</b>を作り、その要約（ハッシュ値）だけを配りました。中身は抽選まで誰も見られません。<br>
+      ① くじを作った時点で<b>封印番号</b>が作られ、その要約（ハッシュ値）だけが公開されました。中身は全員そろうまで誰にも渡されません。<br>
       ② 参加者それぞれが<b>4桁の数字</b>を決めます。<br>
-      ③ 全員そろったら「封印番号＋全員の4桁」から横線の位置が決まります。<br>
-      → 幹事は他人の4桁を知らず、参加者は封印番号を知らないので、<b>誰も結果を操作できません。</b>
+      ③ 全員そろって初めて封印番号が公開され、「封印番号＋全員の4桁」から横線の位置が決まります。<br>
+      → 幹事は他人の4桁を知らず、参加者は封印番号を知らないので、<b>誰も結果を操作できません。</b><br>
+      あみだの線を引く計算は<b>開いた人それぞれの端末</b>で行われるので、保存先が結果を差し替えることもできません。
     </div>
     <details class="dt">
       <summary>公開データを見る${revealed?'（検算ずみ）':''}</summary>
       <div style="margin-top:9px">
-        <label>封印番号のハッシュ値（最初に配ったURLに入っている値）</label>
-        <div class="mono">${esc(K.c)}</div>
+        <label>封印番号のハッシュ値（作成時に公開・変更不可）</label>
+        <div class="mono">${esc(c.c)}</div>
         ${revealed?`
-        <label>封印番号（結果と同時に公開）</label>
-        <div class="mono">${esc(K.d)}</div>
+        <label>封印番号（全員そろって公開された値）</label>
+        <div class="mono">${esc(c.d)}</div>
         <label>まぜ合わせた値（ここから横線が決まる）</label>
         <div class="mono">${esc(D.mix)}</div>
-        <div class="alert ${sha256Hex(K.d)===K.c?'alert-ok':'alert-err'}" style="margin-bottom:0">
-          ${sha256Hex(K.d)===K.c?'✓':'✗'} 封印番号のハッシュ値が一致<br>
-          ${'✓'} この端末で横線${D.bridges.length}本を計算し直して図を描いています<br>
-          <span style="font-size:11.5px">上のハッシュ値が、最初にLINEで配られたURLのものと同じか見比べてください。同じなら、線は後から作り替えられていません。</span>
+        <div class="alert ${sha256Hex(c.d)===c.c?'alert-ok':'alert-err'}" style="margin-bottom:0">
+          ${sha256Hex(c.d)===c.c?'✓':'✗'} 封印番号のハッシュ値が一致<br>
+          ✓ この端末で横線${D.bridges.length}本を計算し直して図を描いています
         </div>`
-        :`<div class="hint">抽選が終わると、ここに封印番号そのものが表示され、この値と一致するか自動で検算されます。</div>`}
+        :`<div class="hint">全員そろうと、ここに封印番号そのものが表示され、この値と一致するか自動で検算されます。</div>`}
       </div>
     </details>
   </div>`;
 }
 
 route();
-window.addEventListener('resize',()=>{if(_R&&$('amida')){drawAmida(_R.K,_R.D);}});
+window.addEventListener('resize',()=>{if(_R&&$('amida'))drawAmida(_R.c,_R.D);});
 </script>
 </body>
 </html>
