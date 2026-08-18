@@ -103,6 +103,14 @@ table.tbl td{padding:10px 8px;border-bottom:1px solid var(--border);}
 table.tbl tr.me td{background:var(--warn-soft);font-weight:700;}
 .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px;}
 
+.wheel-wrap{position:relative;width:100%;max-width:330px;margin:0 auto;}
+.wheel-wrap svg{width:100%;height:auto;display:block;}
+#wheel-g{transform-origin:160px 160px;}
+.rl-now{text-align:center;font-size:15px;font-weight:700;margin:14px 0 8px;min-height:52px;display:flex;flex-direction:column;justify-content:center;}
+.rl-hit{font-size:25px;font-weight:800;color:var(--primary-dark);display:block;margin-top:2px;}
+.rl-list{margin-top:14px;}
+.rl-row{display:flex;align-items:center;gap:9px;padding:9px 4px;border-bottom:1px solid var(--border);font-size:13.5px;animation:pop .35s;}
+@keyframes pop{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
 .amida-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:4px;}
 .amida-scroll svg{display:block;}
 .path-line{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
@@ -444,22 +452,30 @@ function viewCreate(){
     <div class="hint" id="mode-hint" style="margin-top:8px"></div>
   </div>
   <div class="card">
-    <div class="ct">2. タイトル</div>
+    <div class="ct">2. 見せ方</div>
+    <select id="f-view" onchange="onView()">
+      <option value="roulette">ルーレット</option>
+      <option value="amida">あみだくじ</option>
+    </select>
+    <div class="hint" id="view-hint" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <div class="ct">3. タイトル</div>
     <input type="text" id="f-title" value="シルバーウィーク当直">
   </div>
   <div class="card">
-    <div class="ct">3. 参加者（1行に1人）</div>
+    <div class="ct">4. 参加者（1行に1人）</div>
     <textarea id="f-names" rows="7" placeholder="木下&#10;田中&#10;佐藤"></textarea>
     <div class="hint" style="margin-top:6px" id="n-cnt"></div>
   </div>
   <div class="card" id="slot-card">
-    <div class="ct">4. くじの中身（1行に1つ）</div>
+    <div class="ct">5. くじの中身（1行に1つ）</div>
     <div class="hint" style="margin-bottom:7px">人数より少ない分は自動で「なし」が入ります。</div>
     <textarea id="f-slots" rows="6" placeholder="9/19(土) 当直&#10;9/20(日) 当直&#10;9/21(月) 当直&#10;9/22(火) 当直"></textarea>
     <div class="hint" style="margin-top:6px" id="s-cnt"></div>
   </div>
   <div class="card">
-    <div class="ct">5. 幹事パスコード（任意）</div>
+    <div class="ct">6. 幹事パスコード（任意）</div>
     <div class="hint" style="margin-bottom:8px">くじを片づけるときに必要です。空欄でも構いません。</div>
     <input type="text" id="f-pass" placeholder="例）1234" maxlength="12" style="width:140px">
   </div>
@@ -467,9 +483,15 @@ function viewCreate(){
   <button class="btn btn-ghost" onclick="viewHome()">戻る</button>`;
   $('f-names').addEventListener('input',cntUpd);
   $('f-slots').addEventListener('input',cntUpd);
-  onMode();
+  onMode(); onView();
 }
 const lines=id=>(($(id)||{}).value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+function onView(){
+  const v=$('f-view').value;
+  $('view-hint').innerHTML = v==='roulette'
+    ?'<b>先着順です。</b>回した人からその場で当番が決まり、決まった枠にはその人の名前が入ります。全員を待つ必要がありません。'
+    :'<b>全員そろってから一斉に</b>抽選します。縦線から線をたどって結果に至る、昔ながらの形です。';
+}
 function onMode(){
   const m=$('f-mode').value;
   $('slot-card').style.display=m==='assign'?'':'none';
@@ -494,7 +516,7 @@ async function doCreate(){
   try{
     const j=await api('create',{
       title:$('f-title').value.trim()||'あみだくじ',
-      mode:$('f-mode').value, names, slots:lines('f-slots'),
+      mode:$('f-mode').value, view:$('f-view').value, names, slots:lines('f-slots'),
       passcode:$('f-pass').value.trim()
     });
     const h=b64e(JSON.stringify({u:ST.api||getAPI(),i:j.current.id}));
@@ -509,6 +531,7 @@ async function doCreate(){
 
 /* ─────────── 受付中 ─────────── */
 function viewOpen(c){
+  if(c.v==='roulette') return viewBoard(c);
   const me=myName();
   const joined=c.e.filter(x=>x).map(x=>x.n);
   const waiting=c.p.filter(x=>joined.indexOf(x)<0);
@@ -652,8 +675,13 @@ const colorOf=i=>`hsl(${HUES[i%HUES.length]} 72% 45%)`;
 let _R=null;
 
 function viewResult(c){
+  if(c.v==='roulette'){ clearInterval(timer); timer=null; $('live').style.display='none'; return viewBoard(c,true); }
   clearInterval(timer); timer=null; $('live').style.display='none';
   const D=drawResults(c);
+  _R={c,D};
+  viewTable(c,D);
+}
+function viewTable(c,D){
   _R={c,D};
   const okCommit=sha256Hex(c.d)===c.c;
   const me=myName();
@@ -754,14 +782,248 @@ function playPath(entry,keep){
   g.appendChild(p);
   const L=p.getTotalLength();
   p.style.strokeDasharray=L;p.style.strokeDashoffset=L;
+  void p.getBoundingClientRect();
   p.style.transition='stroke-dashoffset 1.1s cubic-bezier(.4,.1,.3,1)';
-  requestAnimationFrame(()=>{p.style.strokeDashoffset=0;});
+  p.style.strokeDashoffset=0;
 }
 function playAll(){clearPaths();_R.D.res.slice().sort((a,b)=>a.entry-b.entry).forEach((r,k)=>setTimeout(()=>playPath(r.entry,true),k*150));}
 function playMine(){
   if(!_R)return;
   const r=_R.D.res.find(x=>x.name===myName());
   r?playPath(r.entry):playAll();
+}
+
+/* ─────────── ルーレット ───────────
+   回転はあくまで演出。結果は封印番号と全員の4桁から先に決まっており、
+   その決まった枠で必ず止まるように回している。               */
+const WS=320,WC=160,WR=138;
+const slotColor=i=>`hsl(${HUES[i%HUES.length]} 70% 52%)`;
+function polar(r,deg){const t=deg*Math.PI/180;return [WC+r*Math.cos(t),WC+r*Math.sin(t)];}
+function sectorPath(r,a0,a1){
+  const [x0,y0]=polar(r,a0),[x1,y1]=polar(r,a1);
+  return `M ${WC} ${WC} L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${(a1-a0)>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z`;
+}
+const cut=(s,n)=>{s=String(s);return s.length>n?s.slice(0,n)+'…':s;};
+
+/** live=まだ決まっていない枠 / hi=今止まった枠 / rot=現在の回転角 */
+function wheelSVG(c,live,hi,rot){
+  const n=c.s.length,a=360/n;
+  let g='';
+  for(let i=0;i<n;i++){
+    const a0=-90+i*a,a1=a0+a,on=live.indexOf(i)>=0;
+    g+=`<path d="${sectorPath(WR,a0,a1)}" fill="${slotColor(i)}" fill-opacity="${hi===i?1:(on?.85:.15)}" stroke="#fff" stroke-width="2"/>`;
+    const mid=a0+a/2,[tx,ty]=polar(WR*0.63,mid),flip=(mid>90||mid<-90)?180:0;
+    g+=`<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" `
+      +`transform="rotate(${(mid+flip).toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)})" `
+      +`font-size="${n>9?10:12}" font-weight="700" fill="#fff" fill-opacity="${on||hi===i?1:.45}">${esc(cut(c.s[i],7))}</text>`;
+  }
+  return `<div class="wheel-wrap"><svg viewBox="0 0 ${WS} ${WS}" xmlns="http://www.w3.org/2000/svg">`
+    +`<g id="wheel-g" style="transform:rotate(${rot}deg)">${g}`
+    +`<circle cx="${WC}" cy="${WC}" r="${WR}" fill="none" stroke="#fff" stroke-width="3"/></g>`
+    +`<circle cx="${WC}" cy="${WC}" r="27" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>`
+    +`<text x="${WC}" y="${WC+5}" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">くじ</text>`
+    +`<path d="M ${WC-13} 3 L ${WC+13} 3 L ${WC} 31 Z" fill="#dc2626" stroke="#fff" stroke-width="2"/>`
+    +`</svg></div>`;
+}
+
+/* 盤面の回転角（画面を描き直しても保つ） */
+let RROT=0;
+
+/** 記録からすべての抽選を計算し直して確かめる */
+function verifyDraws(c){
+  const taken=new Set(); const rows=[]; let allOK=true;
+  for(let k=0;k<(c.dr||[]).length;k++){
+    const d=c.dr[k];
+    const remaining=c.s.map((_,i)=>i).filter(i=>!taken.has(i));
+    const h=sha256Hex(d.s+'|'+d.t+'|'+c.id+'|'+k);
+    const g=remaining[parseInt(h.slice(0,8),16)%remaining.length];
+    const ok=(g===d.g); if(!ok) allOK=false;
+    rows.push({k,d,ok,left:remaining.length});
+    taken.add(d.g);
+  }
+  return {allOK,rows};
+}
+
+/* ─────────── ルーレット：先着順・回した人からその場で決まる ─────────── */
+function viewBoard(c,finished){
+  const me=myName();
+  const dr=c.dr||[];
+  const mine=dr.find(d=>d.n===me);
+  const owner={}; dr.forEach(d=>{owner[d.g]=d;});
+  const drawn=dr.map(d=>d.n);
+  const yet=c.p.filter(x=>drawn.indexOf(x)<0);
+  const live=c.s.map((_,i)=>i).filter(i=>owner[i]===undefined);
+  const V=verifyDraws(c);
+
+  $('app').innerHTML=`
+  ${mine?`<div class="big"><div class="l">${esc(c.t)}　あなたの結果</div>
+    <div class="n">${esc(mine.n)} さん（${dr.indexOf(mine)+1}番目に引きました）</div>
+    <div class="v">${esc(c.s[mine.g])}</div></div>`:''}
+
+  ${finished?`<div class="alert alert-ok"><b>全員決まりました。</b>　${esc(c.at||'')}</div>`:`
+  <div class="card">
+    <div class="stat">
+      <div><b>${c.done}/${c.n}</b><span>決定ずみ</span></div>
+      <div><b>${c.n-c.done}</b><span>残り</span></div>
+      <div><b style="font-size:15px;padding:4px 0">先着順</b><span>回した人から</span></div>
+    </div>
+    <div class="prog"><i style="width:${c.done/c.n*100}%"></i></div>
+    <div class="hint" style="margin-top:9px">${yet.length?'<b>まだの人：</b>'+yet.map(esc).join('、'):''}</div>
+  </div>`}
+
+  <div class="card">
+    <div class="ct">ルーレット</div>
+    <div class="rl-now" id="rl-now">${finished?'すべて決まりました':(mine?'あなたはもう引きました':'名前を選んで回してください')}</div>
+    <div id="wheel-box">${wheelSVG(c,live,-1,RROT)}</div>
+    <div class="hint" style="margin-top:10px;text-align:center">色が薄い枠は、すでに決まった枠です</div>
+  </div>
+
+  ${(finished||mine)?'':`
+  <div class="card">
+    <div class="ct">あなたの番</div>
+    <div style="margin-bottom:12px">
+      <label>名前</label>
+      <select id="b-name" onchange="onBName()">
+        <option value="">-- 選んでください --</option>
+        ${c.p.map(x=>`<option value="${esc(x)}"${x===me?' selected':''}${drawn.indexOf(x)>=0?' disabled':''}>${esc(x)}${drawn.indexOf(x)>=0?'（決定ずみ）':''}</option>`).join('')}
+      </select>
+    </div>
+    <label>好きな4桁の数字</label>
+    <div class="hint" style="margin-bottom:8px">
+      この数字と、保存先がその場で出す乱数を<b>まぜて</b>止まる場所が決まります。
+      どちらか一方だけでは結果を決められないので、誰も操作できません。
+    </div>
+    <div style="display:flex;gap:9px;align-items:center;margin-bottom:14px">
+      <input type="text" id="b-token" inputmode="numeric" maxlength="4" placeholder="0000"
+        style="font-size:26px;letter-spacing:.3em;text-align:center;font-weight:700;flex:1" value="${esc(ST.token)}">
+      <button class="btn btn-sm" style="flex-shrink:0;padding:12px 14px" onclick="bRand()">🎲 おまかせ</button>
+    </div>
+    <button class="btn btn-primary" id="b-go" onclick="doSpinNow()" style="font-size:17px;padding:15px">🎯 回す！</button>
+  </div>`}
+
+  <div class="card">
+    <div class="ct">決まった当番</div>
+    <table class="tbl">
+      <thead><tr><th>${c.m==='assign'?'担当':'順番'}</th><th style="width:44%">名前</th></tr></thead>
+      <tbody>${c.s.map((sl,i)=>{
+        const d=owner[i];
+        return `<tr class="${d&&d.n===me?'me':''}">
+          <td><span class="sw" style="background:${slotColor(i)};opacity:${d?1:.3}"></span><b>${esc(sl)}</b></td>
+          <td>${d?esc(d.n):'<span style="color:var(--muted-2)">— 空き —</span>'}</td></tr>`;}).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  ${dr.length?`<div class="card no-print">
+    <div class="ct">引いた順の記録</div>
+    <table class="tbl">
+      <thead><tr><th style="width:34px">順</th><th>名前</th><th>結果</th><th style="width:52px">4桁</th></tr></thead>
+      <tbody>${dr.map((d,k)=>`<tr class="${d.n===me?'me':''}">
+        <td>${k+1}</td><td>${esc(d.n)}</td><td>${esc(c.s[d.g])}</td>
+        <td style="font-family:monospace">${esc(d.t)}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`:''}
+
+  ${fairBoxR(c,V)}
+
+  ${finished?`<div class="btn-row no-print">
+    <button class="btn btn-primary" onclick="shareText(boardText())">結果を送る</button>
+    <button class="btn" onclick="window.print()">🖨 印刷</button>
+  </div>`:''}
+
+  <div class="card no-print">
+    <div class="ct">幹事メニュー</div>
+    <div class="hint" style="margin-bottom:9px">このURLを全員に配ってください。1回配れば、あとのやり取りは要りません。</div>
+    <div class="mono">${esc(baseURL()+location.hash)}</div>
+    <div class="btn-row" style="margin-bottom:10px">
+      <button class="btn btn-primary" onclick="shareText(shareMsg())">配る</button>
+      <button class="btn" onclick="copyText(baseURL()+location.hash,'URLをコピーしました')">コピー</button>
+    </div>
+    <button class="btn btn-danger" onclick="askReset()">🗑 このくじを取り消す</button>
+  </div>
+  <button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`;
+
+  const t=$('b-token');
+  if(t) t.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);ST.token=e.target.value;});
+}
+function onBName(){
+  const v=$('b-name').value;
+  if(v&&!(ST.cur.dr||[]).some(d=>d.n===myName())) setMyName(v);
+}
+function bRand(){ST.token=String(Math.floor(Math.random()*10000)).padStart(4,'0');$('b-token').value=ST.token;}
+
+async function doSpinNow(){
+  const nm=($('b-name')||{}).value;
+  if(!nm) return toast('名前を選んでください。',true);
+  const tk=($('b-token').value||'').trim();
+  if(!/^\d{4}$/.test(tk)) return toast('4桁の数字を入れてください。',true);
+  setMyName(nm);
+  const b=$('b-go'); b.disabled=true; b.textContent='回しています…';
+  ST.busy=true;
+  let j;
+  try{
+    j=await api('spin',{id:ST.id,name:nm,token:tk});
+  }catch(e){
+    toast(e.message,true);
+    b.disabled=false; b.textContent='🎯 回す！';
+    ST.busy=false; ST.sig=''; return poll();
+  }
+  const c=j.current, d=j.draw;
+  $('rl-now').innerHTML=`<span style="font-size:12.5px;color:var(--muted);font-weight:400">回っています…</span>${esc(nm)} さん`;
+  const a=360/c.s.length;
+  const base=-(d.g*a+a/2);                        // 当たった枠を真上へ
+  RROT=RROT+360*4+(((base-RROT)%360+360)%360);
+  const g=$('wheel-g');
+  g.style.transition='transform 3s cubic-bezier(.16,.72,.19,1)';
+  void g.getBoundingClientRect();                 // 直前の角度を確定させてから動かす
+  g.style.transform=`rotate(${RROT}deg)`;
+  setTimeout(()=>{
+    if($('rl-now')) $('rl-now').innerHTML=`${esc(nm)} さん<span class="rl-hit">${esc(c.s[d.g])}</span>`;
+    setTimeout(()=>{
+      ST.token=''; ST.busy=false;
+      ST.cur=c; ST.sig=JSON.stringify([c.status,c.dr]);
+      if(c.status==='revealed'){clearInterval(timer);timer=null;$('live').style.display='none';}
+      viewBoard(c,c.status==='revealed');
+      window.scrollTo({top:0,behavior:'smooth'});
+    },1700);
+  },3100);
+}
+
+function boardText(){
+  const c=ST.cur;
+  const owner={}; (c.dr||[]).forEach(d=>{owner[d.g]=d;});
+  return `【${c.t}】ルーレット結果（${c.at||''}）\n`
+    +c.s.map((sl,i)=>`${sl}　：　${owner[i]?owner[i].n:'—'}`).join('\n')
+    +`\n\n※このURLを開くと、記録と検算が見られます。\n`+baseURL()+location.hash;
+}
+
+function fairBoxR(c,V){
+  return `
+  <div class="card no-print">
+    <div class="ct">不正ができない仕組み</div>
+    <div class="hint" style="margin-bottom:10px">
+      回した瞬間に、<b>あなたが入れた4桁</b>と<b>保存先がその場で作る乱数</b>をまぜて、残っている枠から1つを選びます。<br>
+      片方だけでは結果を決められないので、幹事も参加者も操作できません。回す前は誰も結果を知りません。<br>
+      使った数字はすべて記録に残るので、<b>全部の抽選をあとから計算し直して確かめられます。</b><br>
+      <span style="color:var(--muted-2)">※円盤の回転は演出です。決まった枠で必ず止まるように回しています。</span>
+    </div>
+    <details class="dt">
+      <summary>記録を見る・検算する${V.rows.length?`（${V.allOK?'✓ 全'+V.rows.length+'件一致':'✗ 不一致あり'}）`:''}</summary>
+      <div style="margin-top:9px">
+        ${V.rows.length?`
+        <div class="alert ${V.allOK?'alert-ok':'alert-err'}" style="font-size:12.5px">
+          ${V.allOK?'✓':'✗'} この端末で${V.rows.length}件すべてを計算し直し、記録どおりの結果になることを確かめました。
+        </div>
+        ${V.rows.map(r=>`<div style="border-bottom:1px solid var(--border);padding:8px 0">
+          <b>${r.k+1}. ${esc(r.d.n)}</b> → ${esc(c.s[r.d.g])}
+          <span style="color:${r.ok?'var(--ok)':'var(--danger)'};font-weight:700">${r.ok?'✓':'✗'}</span>
+          <div class="mono" style="margin:5px 0 0">SHA256( ${esc(r.d.s)} ｜ ${esc(r.d.t)} ｜ ${esc(c.id)} ｜ ${r.k} )<br>→ 残り ${r.left} 枠から ${esc(c.s[r.d.g])}</div>
+        </div>`).join('')}`
+        :'<div class="hint">まだ誰も引いていません。</div>'}
+      </div>
+    </details>
+  </div>`;
 }
 
 /* ─────────── 不正ができない仕組み ─────────── */
