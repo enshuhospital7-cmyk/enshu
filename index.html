@@ -283,6 +283,16 @@ const baseURL=()=>location.origin+location.pathname;
 const myName=()=>localStorage.getItem('amida_me')||'';
 const setMyName=v=>localStorage.setItem('amida_me',v);
 const getAPI=()=>localStorage.getItem('amida_api')||'';
+
+/* 幹事メニューは「そのくじを作った端末」にだけ出す。
+   参加者の画面には配布URLも取り消しボタンも出さない。 */
+function isHost(id){
+  if(localStorage.getItem('amida_host_'+id)) return true;
+  try{
+    return JSON.parse(localStorage.getItem('amida_recent')||'[]')
+      .some(x=>JSON.parse(b64d(x.h)).i===id);
+  }catch(e){ return false; }
+}
 const setAPI=v=>localStorage.setItem('amida_api',v);
 
 async function copyText(t,msg){
@@ -405,14 +415,23 @@ async function saveAPI(){
   if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(v))
     return toast('「https://script.google.com/…/exec」の形のURLを入れてください。',true);
   setAPI(v); ST.api=v;
+  let ver='';
   try{
-    await api('state',{id:'__test__'});
-    toast('つながりました。');
+    const j=await api('ver',{});
+    ver=j.ver||'';
   }catch(e){
-    // くじが無いというエラーなら、つながってはいる
-    if(/見つかりません/.test(e.message)){ toast('つながりました。'); }
-    else { return toast(e.message,true); }
+    if(!/見つかりません|不明な操作/.test(e.message)) return toast(e.message,true);
   }
+  if(ver!=='r2'){
+    $('app').insertAdjacentHTML('afterbegin',`<div class="alert alert-err">
+      <b>つながりましたが、保存先が古い版です。</b><br>
+      このままだとルーレットが使えません。script.google.com でコードを貼り替えたあと、
+      「デプロイ」→「デプロイを管理」→ 鉛筆マーク → バージョンを<b>「新バージョン」</b>にして
+      「デプロイ」を押してください。（URLは変わりません）</div>`);
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  toast('つながりました。（版 '+ver+'／ルーレット対応）');
   viewHome();
 }
 
@@ -519,6 +538,19 @@ async function doCreate(){
       mode:$('f-mode').value, view:$('f-view').value, names, slots:lines('f-slots'),
       passcode:$('f-pass').value.trim()
     });
+    // 保存先が古いままだと、選んだ見せ方が反映されない
+    if(j.current.v!==$('f-view').value){
+      b.disabled=false; b.textContent='くじを作って受付を始める';
+      $('app').insertAdjacentHTML('afterbegin',`<div class="alert alert-err">
+        <b>保存先（Apps Script）が古いままです。</b><br>
+        コードを貼り替えたあと、<b>デプロイし直す</b>必要があります。<br>
+        script.google.com →「デプロイ」→「デプロイを管理」→ 鉛筆マーク →
+        バージョンを<b>「新バージョン」</b>にして「デプロイ」。<br>
+        （URLは変わりません）作られたくじは取り消してから、もう一度作ってください。</div>`);
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
+    localStorage.setItem('amida_host_'+j.current.id,'1');   // この端末が幹事
     const h=b64e(JSON.stringify({u:ST.api||getAPI(),i:j.current.id}));
     const recent=JSON.parse(localStorage.getItem('amida_recent')||'[]');
     recent.unshift({h,t:j.current.t,w:new Date().toLocaleString('ja-JP')});
@@ -606,9 +638,13 @@ function viewOpen(c){
 
   ${fairBox(c,false)}
 
+  ${isHost(c.id)?`
   <div class="card no-print">
     <div class="ct">幹事メニュー</div>
-    <div class="hint" style="margin-bottom:9px">このURLを全員に配ってください。1回配れば、あとのやり取りは要りません。</div>
+    <div class="hint" style="margin-bottom:9px">
+      ここは<b>あなた（くじを作った端末）にだけ</b>表示されています。参加者の画面には出ません。<br>
+      このURLを全員に配ってください。1回配れば、あとのやり取りは要りません。
+    </div>
     <div class="mono">${esc(shareURL)}</div>
     <div class="btn-row" style="margin-bottom:10px">
       <button class="btn btn-primary" onclick="shareText(shareMsg())">配る</button>
@@ -616,7 +652,7 @@ function viewOpen(c){
     </div>
     <div class="hint" style="margin-bottom:9px">来られない人がいる場合は、上のフォームでその人の名前を選んで代理入力できます。</div>
     <button class="btn btn-danger" onclick="askReset()">🗑 このくじを取り消す</button>
-  </div>`;
+  </div>`:''}`;
   const t=$('j-token');
   if(t) t.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);ST.token=e.target.value;});
 }
@@ -932,16 +968,20 @@ function viewBoard(c,finished){
     <button class="btn" onclick="window.print()">🖨 印刷</button>
   </div>`:''}
 
+  ${isHost(c.id)?`
   <div class="card no-print">
     <div class="ct">幹事メニュー</div>
-    <div class="hint" style="margin-bottom:9px">このURLを全員に配ってください。1回配れば、あとのやり取りは要りません。</div>
+    <div class="hint" style="margin-bottom:9px">
+      ここは<b>あなた（くじを作った端末）にだけ</b>表示されています。参加者の画面には出ません。<br>
+      このURLを全員に配ってください。1回配れば、あとのやり取りは要りません。
+    </div>
     <div class="mono">${esc(baseURL()+location.hash)}</div>
     <div class="btn-row" style="margin-bottom:10px">
       <button class="btn btn-primary" onclick="shareText(shareMsg())">配る</button>
       <button class="btn" onclick="copyText(baseURL()+location.hash,'URLをコピーしました')">コピー</button>
     </div>
     <button class="btn btn-danger" onclick="askReset()">🗑 このくじを取り消す</button>
-  </div>
+  </div>`:''}
   <button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`;
 
   const t=$('b-token');
