@@ -132,7 +132,7 @@ details.dt summary{cursor:pointer;font-weight:700;color:var(--muted);}
   <div class="logo">🎋</div>
   <div class="tt">あみだくじ<small id="sub">当番決め</small></div>
   <span class="live" id="live" style="display:none"><i></i><span id="live-t">自動更新中</span></span>
-  <button class="tb-btn no-print" onclick="go('')">最初へ</button>
+  <button class="tb-btn no-print" id="tb-home" onclick="go('')" style="display:none">最初へ</button>
 </div>
 <div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
@@ -286,6 +286,24 @@ const getAPI=()=>localStorage.getItem('amida_api')||'';
 
 /* 幹事メニューは「そのくじを作った端末」にだけ出す。
    参加者の画面には配布URLも取り消しボタンも出さない。 */
+/* 保存先を自分で設定した端末＝幹事の端末。
+   参加者は配られたURLから来るので、この印は付かない。 */
+function isOrganizer(){
+  if(localStorage.getItem('amida_organizer')) return true;
+  // 更新前から幹事として使っていた端末を、そのまま幹事として扱う
+  for(let i=0;i<localStorage.length;i++){
+    if(String(localStorage.key(i)).indexOf('amida_host_')===0){ setOrganizer(); return true; }
+  }
+  if(JSON.parse(localStorage.getItem('amida_recent')||'[]').length){ setOrganizer(); return true; }
+  return false;
+}
+const setOrganizer=()=>localStorage.setItem('amida_organizer','1');
+
+/* 「最初へ」ボタンは幹事だけに出す（参加者を作成画面に入れない） */
+function setHomeBtn(show){
+  const b=$('tb-home'); if(b) b.style.display=show?'':'none';
+}
+
 function isHost(id){
   if(localStorage.getItem('amida_host_'+id)) return true;
   try{
@@ -347,6 +365,7 @@ function route(){
     try{
       const o=JSON.parse(b64d(m[1]));
       ST.api=o.u; ST.id=o.i; setAPI(o.u);
+      localStorage.setItem('amida_last',h);
       ST.cur=null; ST.sig='';
       $('app').innerHTML='<div class="card"><div class="hint">読み込んでいます…</div></div>';
       $('live').style.display='';
@@ -360,7 +379,27 @@ function route(){
   }
   ST.api=getAPI();
   $('sub').textContent='当番決め';
-  if(!ST.api) viewSetup(); else viewHome();
+  if(isOrganizer()) { setHomeBtn(true); return ST.api?viewHome():viewSetup(); }
+  setHomeBtn(false);
+  viewGuest();                      // 参加者には作成画面を出さない
+}
+
+/** 参加者がURLなしで開いたときの案内（作成画面は出さない） */
+function viewGuest(){
+  const last=localStorage.getItem('amida_last')||'';
+  $('app').innerHTML=`
+  <div class="info">
+    <b>参加者の方へ</b><br>
+    幹事から届いた<b>URLを開いてください</b>。このページから操作することはありません。
+  </div>
+  ${last?`<button class="btn btn-primary" onclick="go('${esc(last)}')">🎯 いま参加中のくじにもどる</button>`:''}
+  <div class="card">
+    <div class="ct">くじの開き方</div>
+    <div class="step"><div class="step-n">1</div><div class="step-b"><b>届いたURLを開く</b>メールやチャットに貼られたリンクをタップします。</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-b"><b>名前を選ぶ</b>一覧から自分の名前を選びます。</div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-b"><b>好きな4桁を入れて回す</b>その場で当番が決まります。</div></div>
+  </div>
+  <button class="btn btn-ghost no-print" style="font-size:12.5px;color:var(--muted-2)" onclick="viewSetup()">幹事の方はこちら</button>`;
 }
 
 function live(on,txt){
@@ -391,6 +430,7 @@ async function poll(){
 
 /* ─────────── 保存先の設定（最初の1回だけ） ─────────── */
 function viewSetup(){
+  setHomeBtn(true);
   $('app').innerHTML=`
   <div class="info">
     <b>最初に1回だけ、保存先の設定が必要です。</b><br>
@@ -431,12 +471,15 @@ async function saveAPI(){
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
+  setOrganizer();
   toast('つながりました。（版 '+ver+'／ルーレット対応）');
   viewHome();
 }
 
 /* ─────────── ホーム ─────────── */
 function viewHome(){
+  if(!isOrganizer()){ setHomeBtn(false); return viewGuest(); }
+  setHomeBtn(true);
   const recent=JSON.parse(localStorage.getItem('amida_recent')||'[]');
   $('app').innerHTML=`
   <div class="info">
@@ -531,6 +574,7 @@ function clearRecent(){
 
 /* ─────────── くじを作る ─────────── */
 function viewCreate(){
+  setHomeBtn(true);
   $('app').innerHTML=`
   <div class="card">
     <div class="ct">1. 何を決めますか</div>
@@ -621,6 +665,7 @@ async function doCreate(){
       return;
     }
     localStorage.setItem('amida_host_'+j.current.id,'1');   // この端末が幹事
+    setOrganizer();
     const h=b64e(JSON.stringify({u:ST.api||getAPI(),i:j.current.id}));
     const recent=JSON.parse(localStorage.getItem('amida_recent')||'[]');
     recent.unshift({h,t:j.current.t,w:new Date().toLocaleString('ja-JP')});
@@ -634,6 +679,7 @@ async function doCreate(){
 /* ─────────── 受付中 ─────────── */
 function viewOpen(c){
   if(c.v==='roulette') return viewBoard(c);
+  setHomeBtn(isHost(c.id));
   const me=myName();
   const joined=c.e.filter(x=>x).map(x=>x.n);
   const waiting=c.p.filter(x=>joined.indexOf(x)<0);
@@ -788,6 +834,7 @@ function viewResult(c){
   viewTable(c,D);
 }
 function viewTable(c,D){
+  setHomeBtn(isHost(c.id));
   _R={c,D};
   const okCommit=sha256Hex(c.d)===c.c;
   const me=myName();
@@ -832,7 +879,7 @@ function viewTable(c,D){
   </div>
 
   ${fairBox(c,true,D)}
-  <button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`;
+  ${isHost(c.id)?`<button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`:''}`;
   drawAmida(c,D);
   setTimeout(()=>mine?playPath(mine.entry):playAll(),350);
 }
@@ -952,6 +999,7 @@ function verifyDraws(c){
 
 /* ─────────── ルーレット：先着順・回した人からその場で決まる ─────────── */
 function viewBoard(c,finished){
+  setHomeBtn(isHost(c.id));
   const me=myName();
   const dr=c.dr||[];
   const mine=dr.find(d=>d.n===me);
@@ -1052,7 +1100,7 @@ function viewBoard(c,finished){
     </div>
     <button class="btn btn-danger" onclick="askReset()">🗑 このくじを取り消す</button>
   </div>`:''}
-  <button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`;
+  ${isHost(c.id)?`<button class="btn btn-ghost no-print" onclick="go('')">最初へ</button>`:''}`;
 
   const t=$('b-token');
   if(t) t.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);ST.token=e.target.value;});
