@@ -103,10 +103,10 @@ table.tbl td{padding:10px 8px;border-bottom:1px solid var(--border);}
 table.tbl tr.me td{background:var(--warn-soft);font-weight:700;}
 .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px;}
 
-.wheel-wrap{position:relative;width:100%;max-width:330px;margin:0 auto;}
+.wheel-wrap{position:relative;width:100%;max-width:min(330px,44vh);margin:0 auto;}
 .wheel-wrap svg{width:100%;height:auto;display:block;}
 #wheel-g{transform-origin:160px 160px;}
-.rl-now{text-align:center;font-size:15px;font-weight:700;margin:14px 0 8px;min-height:52px;display:flex;flex-direction:column;justify-content:center;}
+.rl-now{text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;min-height:44px;display:flex;flex-direction:column;justify-content:center;}
 .rl-hit{font-size:25px;font-weight:800;color:var(--primary-dark);display:block;margin-top:2px;}
 .rl-list{margin-top:14px;}
 .rl-row{display:flex;align-items:center;gap:9px;padding:9px 4px;border-bottom:1px solid var(--border);font-size:13.5px;animation:pop .35s;}
@@ -1014,6 +1014,26 @@ function viewBoard(c,finished){
     <div class="n">${esc(mine.n)} さん（${dr.indexOf(mine)+1}番目に引きました）</div>
     <div class="v">${esc(c.s[mine.g])}</div></div>`:''}
 
+  <div class="card">
+    <div class="rl-now" id="rl-now">${finished?'すべて決まりました':(mine?'あなたはもう引きました':'名前と4桁を入れて回してください')}</div>
+    <div id="wheel-box">${wheelSVG(c,live,-1,RROT)}</div>
+
+    ${(finished||mine)?'<div class="hint" style="margin-top:10px;text-align:center">色が薄い枠は、すでに決まった枠です</div>':`
+    <div style="display:flex;gap:7px;margin:14px 0 10px">
+      <select id="b-name" onchange="onBName()" style="flex:1.35;min-width:0;font-size:15px;padding:11px 8px">
+        <option value="">名前を選ぶ</option>
+        ${c.p.map(x=>`<option value="${esc(x)}"${x===me?' selected':''}${drawn.indexOf(x)>=0?' disabled':''}>${esc(x)}${drawn.indexOf(x)>=0?'（決定ずみ）':''}</option>`).join('')}
+      </select>
+      <input type="text" id="b-token" inputmode="numeric" maxlength="4" placeholder="0000"
+        style="flex:1;min-width:0;font-size:20px;letter-spacing:.14em;text-align:center;font-weight:700;padding:11px 4px" value="${esc(ST.token)}">
+      <button class="btn" style="flex-shrink:0;width:48px;padding:0;margin:0;font-size:19px" title="おまかせ" onclick="bRand()">🎲</button>
+    </div>
+    <button class="btn btn-primary" id="b-go" onclick="doSpinNow()" style="font-size:18px;padding:16px;margin:0">🎯 回す！</button>
+    <div class="hint" style="margin-top:9px">
+      色が薄い枠は、すでに決まった枠です。4桁の数字は、保存先がその場で出す乱数と<b>まぜて</b>止まる場所を決めるのに使います。
+    </div>`}
+  </div>
+
   ${finished?`<div class="alert alert-ok"><b>全員決まりました。</b>　${esc(c.at||'')}</div>`:`
   <div class="card">
     <div class="stat">
@@ -1023,36 +1043,6 @@ function viewBoard(c,finished){
     </div>
     <div class="prog"><i style="width:${c.done/c.n*100}%"></i></div>
     <div class="hint" style="margin-top:9px">${yet.length?'<b>まだの人：</b>'+yet.map(esc).join('、'):''}</div>
-  </div>`}
-
-  <div class="card">
-    <div class="ct">ルーレット</div>
-    <div class="rl-now" id="rl-now">${finished?'すべて決まりました':(mine?'あなたはもう引きました':'名前を選んで回してください')}</div>
-    <div id="wheel-box">${wheelSVG(c,live,-1,RROT)}</div>
-    <div class="hint" style="margin-top:10px;text-align:center">色が薄い枠は、すでに決まった枠です</div>
-  </div>
-
-  ${(finished||mine)?'':`
-  <div class="card">
-    <div class="ct">あなたの番</div>
-    <div style="margin-bottom:12px">
-      <label>名前</label>
-      <select id="b-name" onchange="onBName()">
-        <option value="">-- 選んでください --</option>
-        ${c.p.map(x=>`<option value="${esc(x)}"${x===me?' selected':''}${drawn.indexOf(x)>=0?' disabled':''}>${esc(x)}${drawn.indexOf(x)>=0?'（決定ずみ）':''}</option>`).join('')}
-      </select>
-    </div>
-    <label>好きな4桁の数字</label>
-    <div class="hint" style="margin-bottom:8px">
-      この数字と、保存先がその場で出す乱数を<b>まぜて</b>止まる場所が決まります。
-      どちらか一方だけでは結果を決められないので、誰も操作できません。
-    </div>
-    <div style="display:flex;gap:9px;align-items:center;margin-bottom:14px">
-      <input type="text" id="b-token" inputmode="numeric" maxlength="4" placeholder="0000"
-        style="font-size:26px;letter-spacing:.3em;text-align:center;font-weight:700;flex:1" value="${esc(ST.token)}">
-      <button class="btn btn-sm" style="flex-shrink:0;padding:12px 14px" onclick="bRand()">🎲 おまかせ</button>
-    </div>
-    <button class="btn btn-primary" id="b-go" onclick="doSpinNow()" style="font-size:17px;padding:15px">🎯 回す！</button>
   </div>`}
 
   <div class="card">
@@ -1118,6 +1108,9 @@ async function doSpinNow(){
   if(!/^\d{4}$/.test(tk)) return toast('4桁の数字を入れてください。',true);
   setMyName(nm);
   const b=$('b-go'); b.disabled=true; b.textContent='回しています…';
+  // スマホで回転が画面の外に出ないよう、円盤を画面中央へ寄せる
+  const wb=$('wheel-box');
+  if(wb) wb.scrollIntoView({behavior:'smooth',block:'center'});
   ST.busy=true;
   let j;
   try{
@@ -1133,6 +1126,7 @@ async function doSpinNow(){
   const base=-(d.g*a+a/2);                        // 当たった枠を真上へ
   RROT=RROT+360*4+(((base-RROT)%360+360)%360);
   const g=$('wheel-g');
+  if(wb) wb.scrollIntoView({block:'center'});
   g.style.transition='transform 3s cubic-bezier(.16,.72,.19,1)';
   void g.getBoundingClientRect();                 // 直前の角度を確定させてから動かす
   g.style.transform=`rotate(${RROT}deg)`;
@@ -1143,7 +1137,7 @@ async function doSpinNow(){
       ST.cur=c; ST.sig=JSON.stringify([c.status,c.dr]);
       if(c.status==='revealed'){clearInterval(timer);timer=null;$('live').style.display='none';}
       viewBoard(c,c.status==='revealed');
-      window.scrollTo({top:0,behavior:'smooth'});
+      window.scrollTo({top:0,behavior:'smooth'});   // 自分の結果が上に大きく出る
     },1700);
   },3100);
 }
